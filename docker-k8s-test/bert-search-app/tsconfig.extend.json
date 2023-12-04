@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "Icons": ["./icons/index.ts"],
+      "Components/*": ["./components/*"],
+      "@/*": ["./*"]
+    }
+  }
+}
