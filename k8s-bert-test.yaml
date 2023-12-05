@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pm-app
+  namespace: pub-search
+spec:
+  selector:
+    matchLabels:
+      app: pm-app
+  replicas: 1 # tells deployment to run 1 pod matching the template
+  template:
+    metadata:
+      labels:
+        app: pm-app
+    spec:
+      containers:
+      - name: pm-server
+        image: login1.sandbox.g3.computing.kiae.ru/pm-server
+        env:
+        - name: FLASK_PATH
+          value: /data/datasets
+        - name: BERT_MODEL
+          value: /data/model
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      - name: docker-k8s-test-client
+        image: login1.sandbox.g3.computing.kiae.ru/docker-k8s-test-client
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: search-pvc
+          readOnly: false

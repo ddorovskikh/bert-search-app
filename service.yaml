@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pm-app
+  namespace: pub-search
+  labels:
+    app: pm-app
+spec:
+  ports:
+    - name: client-port
+      port: 3000
+    - name: server-port
+      port: 5000
+  selector:
+    app: pm-app
+  type: LoadBalancer
