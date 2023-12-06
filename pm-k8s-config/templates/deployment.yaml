@@ -29,5 +29,5 @@ spec:
       volumes:
       - name: data
         persistentVolumeClaim:
-          claimName: {{ .Values.deployment.claimName }}
+          claimName: {{ .Values.pvc.name }}
           readOnly: false
