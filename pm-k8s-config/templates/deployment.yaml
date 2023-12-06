@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployment.name }} 
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+  replicas: {{ .Values.replicaCount }} # tells deployment to run 1 pod matching the template
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.labels }}
+    spec:
+      containers:
+      - name: pm-server
+        image: {{ .Values.images.imageServer }}
+        env:
+        - name: FLASK_PATH
+          value: {{ .Values.deployment.datasetsPath }}
+        - name: BERT_MODEL
+          value: {{ .Values.deployment.modelPath }}
+        volumeMounts:
+        - name: data
+          mountPath: {{ .Values.deployment.mountPath }}
+      - name: pm-client
+        image: {{ .Values.images.imageClient }}
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: {{ .Values.deployment.claimName }}
+          readOnly: false
