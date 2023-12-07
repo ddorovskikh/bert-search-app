@@ -45,16 +45,15 @@ function App() {
         if (data.error) {
           setError(data.error);
           return setTableData([]);
+        } else {
+          setError('');
         }
-        //console.log(data.table_data)
-        //console.log(data.result_docs)
         var ids:any = [];
         data.result_docs.forEach((q_info: any) => {
           if (q_info['id_from'].includes('21911362')){
             ids.push(...q_info['doc_ids']);
           }
         });
-        //console.log(ids);
         setTableData(Object.values(data.table_data).map((item: any) => {
           if ('authors' in item && item.authors.length) {
             var authors: string = item.authors.join(", ")

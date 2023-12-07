@@ -5,6 +5,7 @@ dataclasses==0.8
 filelock==3.4.1
 Flask==2.0.3
 Flask-Cors==4.0.0
+flask-marshmallow==0.14.0
 fnmatch2==0.0.8
 huggingface-hub==0.4.0
 idna==3.6
@@ -14,6 +15,7 @@ itsdangerous==2.0.1
 Jinja2==3.0.3
 joblib==1.1.1
 MarkupSafe==2.0.1
+marshmallow==3.14.1
 numpy==1.19.5
 packaging==21.3
 pandas==1.1.5

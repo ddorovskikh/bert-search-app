@@ -24,8 +24,8 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /data
-      - name: docker-k8s-test-client
-        image: login1.sandbox.g3.computing.kiae.ru/docker-k8s-test-client
+      - name: pm-client
+        image: login1.sandbox.g3.computing.kiae.ru/pm-client
       volumes:
       - name: data
         persistentVolumeClaim:

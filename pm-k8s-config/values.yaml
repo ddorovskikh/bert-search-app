@@ -8,7 +8,7 @@ labels: "pm-app"
 
 images:
   imageServer: "login1.sandbox.g3.computing.kiae.ru/pm-server"
-  imageClient: "login1.sandbox.g3.computing.kiae.ru/docker-k8s-test-client"
+  imageClient: "login1.sandbox.g3.computing.kiae.ru/pm-client"
 
 deployment:
   name: pm-app
