@@ -10,6 +10,7 @@ function App() {
   const [tableData, setTableData] = useState<any>([]);
   const [timeQuery, setTimeQuery] = useState<number>();
   const [idsFound, setIdsFound] = useState<any>([]);
+  const [error, setError] = useState<string>('');
 
   const columnData: any[] = [
     { title: 'Id', columnName: 'doc_id', customStyle: 'w-1/5' },
@@ -19,9 +20,10 @@ function App() {
   ];
 
   const sendQuery = (query: string) => {
+    var query_json = { "query": query }
     return fetch('http://127.0.0.1:5000/', {
        method: 'POST',
-       body: query,
+       body: JSON.stringify(query_json),
      }).then((response: any) => {
           console.log(response);
           if (response.status >= 200 && response.status < 300) {
@@ -31,17 +33,8 @@ function App() {
         })
         .then( (data: any) =>  { return data });
   }
-  /*
-  const sortObj = (obj) => {
-    return Object.keys(obj).sort().reduce(function (result, key) {
-      result[key] = obj[key];
-      return result;
-    }, {});
-  }
-  */
+
   const gettingData = (input: string) => {
-    //e.preventDefault();
-    //var input = e.target.elements.keyword.value;
     if (input){
       sendQuery(input).then((data: any) => {
         if (!data) {
@@ -49,18 +42,19 @@ function App() {
           return setTableData([]);
         }
         setResponse(data);
-        console.log(data.table_data)
-        console.log(data.result_docs)
+        if (data.error) {
+          setError(data.error);
+          return setTableData([]);
+        }
+        //console.log(data.table_data)
+        //console.log(data.result_docs)
         var ids:any = [];
         data.result_docs.forEach((q_info: any) => {
           if (q_info['id_from'].includes('21911362')){
-            // setIdsFound([idsFound, [...q_info['doc_ids']]]);
-            //return q_info['doc_ids'];
-            // q_info['doc_ids'].forEach((id:any) => {return id});
             ids.push(...q_info['doc_ids']);
           }
         });
-        console.log(ids);
+        //console.log(ids);
         setTableData(Object.values(data.table_data).map((item: any) => {
           if ('authors' in item && item.authors.length) {
             var authors: string = item.authors.join(", ")
@@ -79,19 +73,7 @@ function App() {
       });
     }
   }
-  //console.log(idsFound)
-  //console.log(response);
-  /*
-  <div className="App">
-    <header className="App-header">
-      <Form changeHandler={gettingData}/>
-    </header>
-  </div>
-  */
-  //console.log(tableData)
-  /*<div className="flex">
-    {timeQuery}
-  </div>*/
+
   return (
 
     <div className="mr-5 flex w-full flex-col">
@@ -101,7 +83,7 @@ function App() {
       <div className="box">
         <Form changeHandler={gettingData}/>
       </div>
-      {isResponse && (
+      {isResponse && !error && (
         <>
           <div
             className={`mt-6 mb-6 flex flex-1 flex-col rounded bg-white px-7 pt-7 pb-8 shadow-card dark:border dark:border-neutral-600 dark:bg-neutral-900`}
@@ -112,6 +94,13 @@ function App() {
             />
           </div>
         </>
+      )}
+      {error && (
+        <div
+          className={`text-center mt-10 mb-10`}
+        >
+          {error}
+        </div>
       )}
     </div>
   );

@@ -2,24 +2,36 @@
 
 from flask import Flask, request, json, jsonify
 from flask_cors import CORS
-
-import time
-import numpy as np
-import pandas as pd
+from marshmallow import Schema, fields, validate, ValidationError
+import os, time
 
 from bert_flask_service import tokenizer, model, df, list_quotes, tree, dataset_info
-from bert_flask_service.bert_search_batches import get_embeddings, find_by_key
+from bert_flask_service.bert_search_batches import load_dataset, load_dataset_info, get_embeddings, find_by_key, unpack
+
 
 
 app = Flask(__name__)
 CORS(app, resource = { r"/": { "origins":"*"} })
 
+class MySchema(Schema):
+    query = fields.String(required=True, validate=validate.Length(max=200, error='Query must be a string shorter than 200 letters.'))
+
 @app.route('/', methods=['GET', 'POST'])
 def getQueryFromReactReturnJson():
     if request.method == 'POST':
-        query = request.get_data().decode("utf-8")
-        print("query:", query)
         start_time = time.time()
+        response = json.loads(request.get_data().decode("utf-8"))
+        schema = MySchema()
+        try:
+            schema_data = schema.load(response)
+        except ValidationError as err:
+            return {
+              'table_data': {},
+              'result_docs': [],
+              'time': (time.time() - start_time) / 60,
+              'error': err.messages['query'][0]
+            }
+        query = schema_data['query']
         query_embeddings = get_embeddings(query, tokenizer, model)
         dist, ind = tree.query(query_embeddings, k=100)
         most_relevant_quotes = [list_quotes[x] for x in ind[0]]
@@ -49,13 +61,14 @@ def getQueryFromReactReturnJson():
                         }
                 else:
                     table_data[doc_id]['quotes'].append(str(quote_info['quote'])) # sorted_count -> doc_id
-        
+
         json_response =  {
             'table_data': table_data,
             'result_docs': result_docs,
-            'time': (time.time() - start_time) / 60
+            'time': (time.time() - start_time) / 60,
+            'error': ''
           }
-        
+
         return json_response
 
     else:
@@ -63,5 +76,5 @@ def getQueryFromReactReturnJson():
         return request.get_data()
 
 if __name__ == '__main__':
-    
+
     app.run(debug=False, host='0.0.0.0', port=5000)
