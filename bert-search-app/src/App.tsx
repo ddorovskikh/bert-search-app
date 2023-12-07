@@ -21,7 +21,7 @@ function App() {
 
   const sendQuery = (query: string) => {
     var query_json = { "query": query }
-    return fetch('http://127.0.0.1:5000/', {
+    return fetch('http://127.0.0.1:5000/pm-search', {
        method: 'POST',
        body: JSON.stringify(query_json),
      }).then((response: any) => {

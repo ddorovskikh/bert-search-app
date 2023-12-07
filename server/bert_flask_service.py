@@ -11,12 +11,12 @@ from bert_flask_service.bert_search_batches import load_dataset, load_dataset_in
 
 
 app = Flask(__name__)
-CORS(app, resource = { r"/": { "origins":"*"} })
+CORS(app, resource = { r"/pm-search": { "origins":"*"} })
 
 class MySchema(Schema):
     query = fields.String(required=True, validate=validate.Length(max=200, error='Query must be a string shorter than 200 letters.'))
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/pm-search', methods=['GET', 'POST'])
 def getQueryFromReactReturnJson():
     if request.method == 'POST':
         start_time = time.time()
